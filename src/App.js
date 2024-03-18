@@ -1,44 +1,61 @@
 import React, { useState } from 'react';
 
 export default function App() {
-  const [no, setNo] = useState(0);
+  const [no, setNo] = useState("");
 
-  const [recordedNo, setRecordedNo] = useState([]);
-  
-  const saveNo = () => {
-    if ( no == '' ) {
-      alert('숫자를 입력해주세요.');
+  const [recordedNos, setRecordedNos] = useState([10, 20, 30]);
+
+  const saveNo = (form) => {
+    form.no.value = form.no.value.trim();
+
+    if ( form.no.value.length == 0 ) {
+      alert("숫자를 입력해주세요.");
+      form.no.focus();
       return;
     }
 
-    setRecordedNo([...recordedNo, no]);
-    setNo('');
-  }
+    setRecordedNos([...recordedNos, form.no.value]);
+    form.no.value = '';
+    form.no.focus();
+  };
 
-  const li = recordedNo.map((el, index) => <li key={index}>{el}</li>);
+  const li = recordedNos.map((el, index) => <li key={index}>{el}</li>);
 
-  return <>
-    <form onSubmit={(e) => {
-      e.preventDefault();
-      saveNo();
-    }}>
-      <input type="number" className="input input-bordered" value={no} onChange={(e) => setNo(e.target.valueAsNumber)}/>
-      <button type="submit" className="btn">기록</button>
-    </form>
+  return (
+    <>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          saveNo(e.target);
+        }}
+      >
+        <input
+          type="number"
+          name="no"
+          value={no}
+          onChange={(e) => setNo(e.target.valueAsNumber)}
+        />
+        <button type="submit">기록</button>
+      </form>
 
+      <hr />
 
-    <hr />
+      <h1>기록된 숫자 v1</h1>
+      {recordedNos.join(",")}
 
-    <div className='text-2xl'>기록된 숫자 : v1</div>
-    {recordedNo.join(', ')}
+      <hr />
 
-    <div className='text-2xl'>기록된 숫자 : v2</div>
-    <ul>{li}</ul>
+      <h1>기록된 숫자 v2</h1>
+      <ul>{li}</ul>
 
-    <div className='text-2xl'>기록된 숫자 : v3</div>
-    <ul>
-      {recordedNo.map((el, index) => <li key={index}>{el}</li>)}
-    </ul>
+      <hr />
 
-  </> 
+      <h1>기록된 숫자 v2-2</h1>
+      <ul>
+        {recordedNos.map((el, index) => (
+          <li key={index}>{el}</li>
+        ))}
+      </ul>
+    </>
+  );
 }
