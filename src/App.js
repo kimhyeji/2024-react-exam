@@ -20,8 +20,15 @@ export default function App() {
   };
 
   const removeNo = (index) => {
-    const newRecordedNos = recordedNos.filter((_, _index) => _index != index);
-    setRecordedNos(newRecordedNos);
+    setRecordedNos(
+      recordedNos.filter((_, _index) => _index != index)
+    );
+  }
+
+  const modifyNo = (index, newNo) => {
+    setRecordedNos(
+      recordedNos.map((el, _index) => _index == index ? newNo : el)
+      );
   }
 
   return (
@@ -46,9 +53,12 @@ export default function App() {
       <ul>
         {recordedNos.map((el, index) => (
           <li key={index} className='flex'>
-            <span className='w-7'>{el}</span>
-            <span className='w-7'>{index}</span>
+            <span className='w-10'>{el}</span>
+            <span className='w-10'> : {index}</span>
             <button className='btn btn-primary btn-xs' onClick={() => removeNo(index)}>삭제</button>
+            <button className='btn btn-primary btn-xs' onClick={() => modifyNo(index, el + 1)}>+1</button>
+            <button className='btn btn-primary btn-xs' onClick={() => modifyNo(index, el - 1)}>-1</button>
+            <button className='btn btn-primary btn-xs' onClick={() => modifyNo(index, 10)}>10</button>
           </li>
         ))}
       </ul>
