@@ -9,7 +9,8 @@ import {
   List, 
   ListItem, 
   ListItemButton, 
-  Divider
+  Divider,
+  Modal
 } from '@mui/material';
 import classNames from 'classnames';
 
@@ -41,11 +42,20 @@ function useTodosState() {
     setTodos(newTodos);
   }
 
+  const removeTodoById = (id) => {
+    const index = todos.findIndex((todo) => todo.id == id);
+
+    if ( index != -1 ) {
+      removeTodo(index);
+    }
+  }
+
   return {
     todos,
     addTodo,
     removeTodo,
-    modifyTodo
+    modifyTodo,
+    removeTodoById
   }
 }
 
@@ -105,7 +115,32 @@ function useTodoOptionDrawerState() {
   };
 }
 
-function TodoOptionDrawer({state}) {
+function useEditTodoModalState() {
+  const [opened, setOpened] = useState(false);
+
+  const open = () => {
+    setOpened(true);
+  }
+
+  const close = () => {
+    setOpened(false);
+  }
+
+  return {
+    opened,
+    open,
+    close
+  };
+}
+
+function TodoOptionDrawer({todosState, state}) {
+  const editTodoModalState = useEditTodoModalState();
+
+  const removeTodo = () => {
+    todosState.removeTodoById(state.todoId);
+    state.close();
+  }
+
   return(
     <>
       <SwipeableDrawer
@@ -118,16 +153,24 @@ function TodoOptionDrawer({state}) {
             <span className="text-[color:var(--mui-color-primary-main)] font-bold">{state.todoId}번</span>
           </ListItem>
           <Divider variant="middle" />
-          <ListItemButton className='!p-5'>
+          <ListItemButton className='!p-5' onClick={editTodoModalState.open}>
             <i class="fa-regular fa-pen-to-square"></i>
             <span className='ml-1'>수정</span>
             </ListItemButton>
-          <ListItemButton className='!p-5'>
+          <ListItemButton className='!p-5' onClick={removeTodo}>
             <i class="fa-regular fa-trash-can"></i>
             <span className='ml-1'>삭제</span>
           </ListItemButton>
         </List>
       </SwipeableDrawer>
+
+      <Modal
+        open={editTodoModalState.opened}
+        onClose={editTodoModalState.close}
+        className='flex justify-center items-center'
+      >
+        <div className='bg-white rounded-[10px] p-10'>안녕</div>
+      </Modal>
     </>
   );
 }
@@ -137,7 +180,8 @@ function TodoList({todosState}) {
 
   return (
     <>
-      <TodoOptionDrawer state={todoOptionDrawerState} />
+      <TodoOptionDrawer todosState={todosState} state={todoOptionDrawerState} />
+
       <div className='mt-4 px-4'>
         <ul>
           {todosState.todos.map((todo, index) => (
@@ -210,6 +254,8 @@ export default function App() {
         </Toolbar>
       </AppBar>
       <Toolbar/>
+      
+      <img src="https://imgur.com/hv1oncI" alt="" />
 
       <NewTodoForm todosState={todosState} />
 
